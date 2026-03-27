@@ -1,0 +1,202 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  background: var(--color-bg-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    radial-gradient(circle, rgba(107, 70, 193, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+  z-index: 0;
+  transition: background-image var(--transition-normal);
+}
+
+[data-theme="light"] body::before {
+  background-image:
+    radial-gradient(circle, rgba(107, 70, 193, 0.06) 1px, transparent 1px);
+}
+
+#root {
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: var(--weight-bold);
+  line-height: 1.2;
+  color: var(--color-text-primary);
+}
+
+h1 { font-size: var(--text-2xl); }
+h2 { font-size: var(--text-xl); }
+h3 { font-size: var(--text-lg); }
+h4 { font-size: var(--text-md); }
+
+p {
+  margin-bottom: var(--space-4);
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: color var(--transition-normal);
+}
+
+a:hover {
+  color: var(--color-text-primary);
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+}
+
+::placeholder {
+  color: var(--color-text-disabled);
+  opacity: 1;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent-dim);
+}
+
+::selection {
+  background: var(--color-accent-glow);
+  color: var(--color-text-primary);
+}
+
+/* ══════════════════════════════════════════════════
+   COSMIC BACKGROUND (Purple Theme)
+══════════════════════════════════════════════════ */
+.cosmic-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.cosmic-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.08;
+  transition: opacity 0.3s ease;
+}
+
+[data-theme="light"] .cosmic-orb {
+  opacity: 0.06;
+}
+
+.orb-purple-1 {
+  width: 640px;
+  height: 640px;
+  top: -200px;
+  left: -120px;
+  background: radial-gradient(circle, #6B46C1, transparent 70%);
+}
+
+.orb-purple-2 {
+  width: 480px;
+  height: 480px;
+  bottom: -80px;
+  right: -100px;
+  background: radial-gradient(circle, #553C9A, transparent 70%);
+}
+
+.orb-purple-3 {
+  width: 320px;
+  height: 320px;
+  top: 42%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, #9F7AEA, transparent 70%);
+  opacity: 0.05;
+}
+
+.stars {
+  position: absolute;
+  inset: 0;
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+}
+
+[data-theme="light"] .stars {
+  opacity: 0.15;
+}
+
+.stars::before,
+.stars::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 15% 22%, rgba(107, 70, 193, 0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 38% 9%, rgba(107, 70, 193, 0.25) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 62% 31%, rgba(107, 70, 193, 0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 84% 15%, rgba(107, 70, 193, 0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 7% 65%, rgba(107, 70, 193, 0.15) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 55% 78%, rgba(107, 70, 193, 0.25) 0%, transparent 100%),
+    radial-gradient(1px 1px at 91% 55%, rgba(107, 70, 193, 0.15) 0%, transparent 100%),
+    radial-gradient(1px 1px at 28% 88%, rgba(107, 70, 193, 0.25) 0%, transparent 100%);
+}
+
+.stars::after {
+  background-image:
+    radial-gradient(1px 1px at 20% 40%, rgba(107, 70, 193, 0.2) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 50% 20%, rgba(107, 70, 193, 0.25) 0%, transparent 100%),
+    radial-gradient(1px 1px at 78% 72%, rgba(107, 70, 193, 0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 5% 90%, rgba(107, 70, 193, 0.15) 0%, transparent 100%);
+}
