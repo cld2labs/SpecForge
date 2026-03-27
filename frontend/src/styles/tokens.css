@@ -1,0 +1,112 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* Cloud2 Labs Purple Branding */
+  --color-primary:        #6B46C1;   /* Cloud2Labs primary purple */
+  --color-accent:         #C2185B;   /* Cloud2Labs magenta accent */
+
+  /* Dark Theme (default) */
+  --color-bg-base:        #0F0A1A;   /* deep purple-black */
+  --color-bg-surface:     #1A1228;   /* elevated purple-navy */
+  --color-bg-elevated:    #251B35;   /* cards, panels */
+  --color-bg-input:       #1F1730;   /* input fields */
+
+  --color-border:         #33264D;   /* subtle purple border */
+  --color-border-strong:  #4A3366;   /* stronger border */
+  --color-border-accent:  rgba(107, 70, 193, 0.4);  /* primary with opacity */
+
+  --color-text-primary:   #F5F3FF;   /* near-white with purple tint */
+  --color-text-secondary: #B8A3D9;   /* muted purple-grey */
+  --color-text-muted:     #6B5B80;   /* very muted */
+  --color-text-disabled:  #4A3D5C;   /* disabled text */
+  --color-text-tertiary:  #8774A3;   /* tertiary text for tags */
+  --color-text-accent:    #A78BFA;   /* lighter purple for links */
+
+  --color-success:        #10B981;   /* green */
+  --color-error:          #EF4444;   /* red */
+  --color-warning:        #F59E0B;   /* amber */
+
+  /* Accents with opacity */
+  --color-primary-glow:   rgba(107, 70, 193, 0.15);
+  --color-primary-subtle: rgba(107, 70, 193, 0.08);
+  --color-accent-glow:    rgba(194, 24, 91, 0.15);
+
+  /* Typography */
+  --font-sans:   'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono:   'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+
+  --text-xs:   11px;
+  --text-sm:   13px;
+  --text-base: 15px;
+  --text-md:   17px;
+  --text-lg:   22px;
+  --text-xl:   28px;
+  --text-2xl:  36px;
+
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* Spacing */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Borders */
+  --radius-sm:  4px;
+  --radius-md:  8px;
+  --radius-lg:  12px;
+  --radius-xl:  20px;
+  --radius-pill: 100px;
+
+  /* Shadows */
+  --shadow-sm:     0 1px 4px rgba(0,0,0,0.5);
+  --shadow-md:     0 4px 20px rgba(0,0,0,0.6);
+  --shadow-accent: 0 0 24px rgba(107,70,193,0.2);
+
+  /* Layout */
+  --max-width-conversation: 680px;
+  --max-width-spec: 900px;
+  --header-height: 60px;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+}
+
+/* Light Theme */
+[data-theme="light"] {
+  --color-bg-base:        #FAF8FF;   /* very light purple */
+  --color-bg-surface:     #FFFFFF;   /* pure white */
+  --color-bg-elevated:    #F8F6FF;   /* light purple tint */
+  --color-bg-input:       #FFFFFF;   /* white inputs */
+
+  --color-border:         #E5DEFF;   /* light purple border */
+  --color-border-strong:  #C4B5FD;   /* stronger light border */
+  --color-border-accent:  rgba(107, 70, 193, 0.3);
+
+  --color-text-primary:   #1A0F2E;   /* darker purple-black for better contrast */
+  --color-text-secondary: #4A3966;   /* darker muted purple for better readability */
+  --color-text-muted:     #9B8BB5;   /* light muted purple */
+  --color-text-disabled:  #B8ACCC;   /* disabled text */
+  --color-text-tertiary:  #7866A1;   /* tertiary text for tags */
+  --color-text-accent:    #6B46C1;   /* primary purple for links */
+
+  --color-primary-glow:   rgba(107, 70, 193, 0.12);
+  --color-primary-subtle: rgba(107, 70, 193, 0.06);
+  --color-accent-glow:    rgba(194, 24, 91, 0.12);
+
+  --shadow-sm:     0 1px 3px rgba(31,22,56,0.1);
+  --shadow-md:     0 4px 16px rgba(31,22,56,0.15);
+  --shadow-accent: 0 0 20px rgba(107,70,193,0.15);
+}
