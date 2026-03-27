@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/InnovationHub-HeaderImage.png" width="800" alt="Company Logo">
+</p>
+
 # SpecForge — AI-Powered System Design Spec Generator
 
 An AI-powered application that generates comprehensive system design specifications. Input your project idea, answer targeted questions, and receive a detailed architectural specification with diagrams, data models, API designs, and implementation plans — powered by any OpenAI-compatible LLM endpoint or locally running Ollama model.

@@ -1,56 +1,39 @@
-# Pull Request
+## Summary
 
-## Description
+<!-- What does this PR do? Keep it to 1-3 bullet points. -->
 
-<!-- Provide a brief description of the changes in this PR -->
+-
 
 ## Type of Change
 
+<!-- Check the one that applies. -->
+
 - [ ] Bug fix
-- [ ] New feature
-- [ ] Breaking change
+- [ ] New feature / enhancement
 - [ ] Documentation update
-- [ ] Refactoring
-- [ ] Dependency update
-
-## Related Issue
-
-<!-- Link to the issue this PR addresses, if applicable -->
-Fixes #
+- [ ] Refactor (no behavior change)
+- [ ] Chore (dependencies, CI, tooling)
 
 ## Changes Made
 
-<!-- List the specific changes made in this PR -->
+<!-- Briefly describe the key changes. Link to relevant issues if applicable. -->
 
--
--
--
+Resolves #<!-- issue number -->
 
-## Testing
+## How to Test
 
-<!-- Describe the testing you've done -->
+<!-- Steps a reviewer can follow to verify the changes. -->
 
-- [ ] Tested locally with Docker
-- [ ] Tested with OpenAI provider
-- [ ] Tested with Ollama provider
-- [ ] Tested all affected endpoints
-- [ ] Verified frontend functionality
+1.
 
 ## Checklist
 
-- [ ] Code follows project style guidelines
-- [ ] Self-review completed
-- [ ] Comments added for complex code
-- [ ] Documentation updated (if needed)
-- [ ] No breaking changes (or documented if unavoidable)
-- [ ] All tests pass locally
-- [ ] No secrets or API keys committed
-- [ ] `.env` files not committed
+- [ ] I have read the [Contributing Guide](../CONTRIBUTING.md)
+- [ ] My branch is up to date with `main`
+- [ ] New environment variables (if any) are documented in `.env.example` and the README
+- [ ] No secrets, API keys, or credentials are included in this PR
+- [ ] I have tested my changes locally
 
-## Screenshots
+## Screenshots (if applicable)
 
-<!-- If applicable, add screenshots to demonstrate the changes -->
-
-## Additional Notes
-
-<!-- Any additional information reviewers should know -->
+<!-- Add screenshots for UI changes. Delete this section if not applicable. -->
