@@ -6,18 +6,44 @@ An AI-powered application that generates comprehensive system design specificati
 
 ## Table of Contents
 
-- [Project Overview](#project-overview)
-- [How It Works](#how-it-works)
-- [Architecture](#architecture)
-- [Get Started](#get-started)
-- [Project Structure](#project-structure)
-- [Usage Guide](#usage-guide)
-- [LLM Provider Configuration](#llm-provider-configuration)
-- [Environment Variables](#environment-variables)
-- [Technology Stack](#technology-stack)
-- [Troubleshooting](#troubleshooting)
-- [License](#license)
-- [Disclaimer](#disclaimer)
+- [SpecForge — AI-Powered System Design Spec Generator](#specforge--ai-powered-system-design-spec-generator)
+  - [Table of Contents](#table-of-contents)
+  - [Project Overview](#project-overview)
+  - [How It Works](#how-it-works)
+  - [Architecture](#architecture)
+    - [Architecture Diagram](#architecture-diagram)
+    - [Service Components](#service-components)
+  - [Get Started](#get-started)
+    - [Prerequisites](#prerequisites)
+      - [Verify Installation](#verify-installation)
+    - [Quick Start (Docker Deployment)](#quick-start-docker-deployment)
+      - [1. Clone the Repository](#1-clone-the-repository)
+      - [2. Configure the Environment](#2-configure-the-environment)
+      - [3. Build and Start the Application](#3-build-and-start-the-application)
+      - [4. Access the Application](#4-access-the-application)
+      - [5. Verify Services](#5-verify-services)
+      - [6. Stop the Application](#6-stop-the-application)
+    - [Local Development Setup](#local-development-setup)
+  - [Project Structure](#project-structure)
+  - [Usage Guide](#usage-guide)
+  - [LLM Provider Configuration](#llm-provider-configuration)
+    - [OpenAI](#openai)
+    - [Groq](#groq)
+    - [Ollama](#ollama)
+    - [OpenRouter](#openrouter)
+    - [Custom OpenAI-Compatible API](#custom-openai-compatible-api)
+    - [Switching Providers](#switching-providers)
+  - [Environment Variables](#environment-variables)
+    - [Core LLM Configuration](#core-llm-configuration)
+    - [Generation Parameters](#generation-parameters)
+    - [Server Configuration](#server-configuration)
+  - [Technology Stack](#technology-stack)
+    - [Backend](#backend)
+    - [Frontend](#frontend)
+  - [Troubleshooting](#troubleshooting)
+    - [Common Issues](#common-issues)
+  - [License](#license)
+  - [Disclaimer](#disclaimer)
 
 ---
 
@@ -103,10 +129,22 @@ graph TB
 
 ### Prerequisites
 
+Before you begin, ensure you have the following installed and configured:
+
 - **Docker and Docker Compose** (v2)
+  - [Install Docker](https://docs.docker.com/get-docker/)
+  - [Install Docker Compose](https://docs.docker.com/compose/install/)
 - An inference endpoint — one of:
   - A remote OpenAI-compatible API key (OpenAI, Groq, OpenRouter, or enterprise gateway)
   - [Ollama](https://ollama.com/download) installed natively on the host machine
+
+#### Verify Installation
+
+```bash
+docker --version
+docker compose version
+docker ps
+```
 
 ### Quick Start (Docker Deployment)
 
@@ -123,30 +161,21 @@ cd SpecForge
 cp .env.example .env
 ```
 
-Open `.env` and set `INFERENCE_PROVIDER` plus the corresponding variables for your chosen provider.
-
-**Example for OpenAI:**
-```bash
-INFERENCE_PROVIDER=remote
-INFERENCE_API_ENDPOINT=https://api.openai.com
-INFERENCE_API_TOKEN=sk-...
-INFERENCE_MODEL_NAME=gpt-4o
-```
-
-**Example for Ollama:**
-```bash
-INFERENCE_PROVIDER=ollama
-INFERENCE_API_ENDPOINT=http://host.docker.internal:11434
-INFERENCE_MODEL_NAME=codellama:34b
-```
+Open `.env` and set `INFERENCE_PROVIDER` plus the corresponding variables for your chosen provider. See [LLM Provider Configuration](#llm-provider-configuration) for per-provider instructions.
 
 #### 3. Build and Start the Application
 
 ```bash
+# Standard (attached)
 docker compose up --build
+
+# Detached (background)
+docker compose up -d --build
 ```
 
 #### 4. Access the Application
+
+Once containers are running:
 
 - **Frontend UI**: [http://localhost:3000](http://localhost:3000)
 - **Backend API**: [http://localhost:8000](http://localhost:8000)
@@ -155,7 +184,24 @@ docker compose up --build
 #### 5. Verify Services
 
 ```bash
+# Health check
 curl http://localhost:8000/health
+
+# View running containers
+docker compose ps
+```
+
+**View logs:**
+
+```bash
+# All services
+docker compose logs -f
+
+# Backend only
+docker compose logs -f specforge-api
+
+# Frontend only
+docker compose logs -f specforge-ui
 ```
 
 #### 6. Stop the Application
@@ -163,6 +209,31 @@ curl http://localhost:8000/health
 ```bash
 docker compose down
 ```
+
+### Local Development Setup
+
+Run the backend and frontend directly on the host without Docker.
+
+**Backend (Python / FastAPI)**
+
+```bash
+cd backend
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+cp ../.env.example ../.env       # configure your .env at the repo root
+uvicorn main:app --reload --port 8000
+```
+
+**Frontend (Node / Vite)**
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The Vite dev server proxies `/api/` to `http://localhost:8000`. Open [http://localhost:5173](http://localhost:5173).
 
 ---
 
@@ -242,7 +313,11 @@ INFERENCE_API_TOKEN=sk-...
 INFERENCE_MODEL_NAME=gpt-4o
 ```
 
+Recommended models: `gpt-4o`, `gpt-4o-mini`, `gpt-4-turbo`.
+
 ### Groq
+
+Groq provides OpenAI-compatible endpoints with extremely fast inference (LPU hardware).
 
 ```bash
 INFERENCE_PROVIDER=remote
@@ -251,21 +326,41 @@ INFERENCE_API_TOKEN=gsk_...
 INFERENCE_MODEL_NAME=llama3-70b-8192
 ```
 
+Recommended models: `llama3-70b-8192`, `mixtral-8x7b-32768`, `llama-3.1-8b-instant`.
+
 ### Ollama
+
+Runs inference locally on the host machine with full GPU acceleration.
 
 1. Install Ollama: [https://ollama.com/download](https://ollama.com/download)
 2. Pull a model:
    ```bash
+   # Production — best spec generation quality (~20 GB)
    ollama pull codellama:34b
+
+   # Testing / SLM benchmarking (~4 GB, fast)
+   ollama pull codellama:7b
+
+   # Other strong code models
+   ollama pull deepseek-coder:6.7b
+   ollama pull qwen2.5-coder:7b
+   ollama pull codellama:13b
    ```
-3. Configure `.env`:
+3. Confirm Ollama is running:
+   ```bash
+   curl http://localhost:11434/api/tags
+   ```
+4. Configure `.env`:
    ```bash
    INFERENCE_PROVIDER=ollama
    INFERENCE_API_ENDPOINT=http://host.docker.internal:11434
    INFERENCE_MODEL_NAME=codellama:34b
+   # INFERENCE_API_TOKEN is not required for Ollama
    ```
 
 ### OpenRouter
+
+OpenRouter provides a unified API across hundreds of models from different providers.
 
 ```bash
 INFERENCE_PROVIDER=remote
@@ -274,42 +369,67 @@ INFERENCE_API_TOKEN=sk-or-...
 INFERENCE_MODEL_NAME=anthropic/claude-3.5-sonnet
 ```
 
+Recommended models: `anthropic/claude-3.5-sonnet`, `meta-llama/llama-3.1-70b-instruct`, `deepseek/deepseek-coder`.
+
+### Custom OpenAI-Compatible API
+
+Any enterprise gateway that exposes an OpenAI-compatible `/v1/completions` or `/v1/chat/completions` endpoint works without code changes.
+
+**GenAI Gateway (LiteLLM-backed):**
+
+```bash
+INFERENCE_PROVIDER=remote
+INFERENCE_API_ENDPOINT=https://genai-gateway.example.com
+INFERENCE_API_TOKEN=your-litellm-master-key
+INFERENCE_MODEL_NAME=codellama/CodeLlama-34b-Instruct-hf
+```
+
+If the endpoint uses a private domain mapped in `/etc/hosts`, also set:
+
+```bash
+LOCAL_URL_ENDPOINT=your-private-domain.internal
+```
+
 ### Switching Providers
 
-1. Edit `.env` with the new provider's values
-2. Restart the backend:
+1. Edit `.env` with the new provider's values.
+2. Restart the backend container:
    ```bash
    docker compose restart specforge-api
    ```
+
+No rebuild is needed — all settings are injected at runtime via environment variables.
 
 ---
 
 ## Environment Variables
 
+All variables are defined in `.env` (copied from `.env.example`). The backend reads them at startup via `python-dotenv`.
+
 ### Core LLM Configuration
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `INFERENCE_PROVIDER` | `remote` for APIs; `ollama` for local | `remote` |
-| `INFERENCE_API_ENDPOINT` | Base URL of the inference service | — |
-| `INFERENCE_API_TOKEN` | Bearer token / API key (not required for Ollama) | — |
-| `INFERENCE_MODEL_NAME` | Model identifier | `gpt-4o` |
+| Variable | Description | Default | Type |
+|----------|-------------|---------|------|
+| `INFERENCE_PROVIDER` | `remote` for any OpenAI-compatible API; `ollama` for local inference | `remote` | string |
+| `INFERENCE_API_ENDPOINT` | Base URL of the inference service (no `/v1` suffix) | — | string |
+| `INFERENCE_API_TOKEN` | Bearer token / API key. Not required for Ollama | — | string |
+| `INFERENCE_MODEL_NAME` | Model identifier passed to the API | `gpt-4o` | string |
 
 ### Generation Parameters
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `LLM_TEMPERATURE` | Sampling temperature (0.0–2.0) | `0.7` |
-| `LLM_MAX_TOKENS` | Maximum tokens in output | `8000` |
+| Variable | Description | Default | Type |
+|----------|-------------|---------|------|
+| `LLM_TEMPERATURE` | Sampling temperature. Lower = more deterministic output (0.0–2.0) | `0.7` | float |
+| `LLM_MAX_TOKENS` | Maximum tokens in the generated output | `8000` | integer |
 
 ### Server Configuration
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `BACKEND_PORT` | Port the FastAPI server listens on | `8000` |
-| `CORS_ALLOW_ORIGINS` | Allowed CORS origins (comma-separated) | `http://localhost:3000,...` |
-| `LOCAL_URL_ENDPOINT` | Private domain mapping (if needed) | `not-needed` |
-| `VERIFY_SSL` | Set `false` for self-signed certs | `true` |
+| Variable | Description | Default | Type |
+|----------|-------------|---------|------|
+| `BACKEND_PORT` | Port the FastAPI server listens on | `8000` | integer |
+| `CORS_ALLOW_ORIGINS` | Allowed CORS origins (comma-separated or `*`). Restrict in production | `["*"]` | string |
+| `LOCAL_URL_ENDPOINT` | Private domain in `/etc/hosts` the container must resolve. Leave as `not-needed` if not applicable | `not-needed` | string |
+| `VERIFY_SSL` | Set `false` only for environments with self-signed certificates | `true` | boolean |
 
 ---
 
@@ -317,17 +437,17 @@ INFERENCE_MODEL_NAME=anthropic/claude-3.5-sonnet
 
 ### Backend
 
-- **Framework**: FastAPI (Python 3.11+)
-- **LLM Integration**: `openai` Python SDK — works with any OpenAI-compatible endpoint
-- **Local Inference**: Ollama — runs natively with full GPU acceleration
-- **Config Management**: `python-dotenv`
-- **Data Validation**: Pydantic v2
+- **Framework**: FastAPI (Python 3.11+) with Uvicorn ASGI server
+- **LLM Integration**: `openai` Python SDK — works with any OpenAI-compatible endpoint (remote or Ollama)
+- **Local Inference**: Ollama — runs natively on host with full Metal (MPS) or CUDA GPU acceleration
+- **Config Management**: `python-dotenv` for environment variable injection at startup
+- **Data Validation**: Pydantic v2 for request/response schema enforcement
 
 ### Frontend
 
-- **Framework**: React 18 with Vite
-- **Styling**: Tailwind CSS v3
-- **UI Features**: Real-time streaming, markdown rendering, dark mode
+- **Framework**: React 18 with Vite (fast HMR and production bundler)
+- **Styling**: Tailwind CSS v3 with custom dark mode design
+- **UI Features**: Real-time streaming, markdown rendering, conversational refinement, dark mode
 
 ---
 
@@ -335,18 +455,68 @@ INFERENCE_MODEL_NAME=anthropic/claude-3.5-sonnet
 
 For detailed troubleshooting, see [TROUBLESHOOTING.md](./TROUBLESHOOTING.md).
 
-**Common Issues:**
+### Common Issues
 
-- **Backend returns 503**: Check that `INFERENCE_API_ENDPOINT` and `INFERENCE_API_TOKEN` are set correctly
-- **Ollama connection refused**: Ensure Ollama is running on the host (`ollama serve`)
-- **Slow inference**: Verify Ollama is not running in Docker (use native installation)
-- **SSL errors**: Set `VERIFY_SSL=false` in `.env`
+**Issue: Backend returns 503 or 500 on generate**
+
+```bash
+# Check backend logs for error details
+docker compose logs specforge-api
+
+# Verify the inference endpoint and token are set correctly
+grep INFERENCE .env
+```
+
+- Confirm `INFERENCE_API_ENDPOINT` is reachable from your machine.
+- Verify `INFERENCE_API_TOKEN` is valid and has the correct permissions.
+
+**Issue: Ollama connection refused**
+
+```bash
+# Confirm Ollama is running on the host
+curl http://localhost:11434/api/tags
+
+# If not running, start it
+ollama serve
+```
+
+**Issue: Ollama is slow / appears to be CPU-only**
+
+- Ensure Ollama is running natively on the host, **not** inside Docker.
+- On macOS, verify the Ollama app is using MPS in Activity Monitor (GPU History).
+- See the [Ollama](#ollama) section for correct setup.
+
+**Issue: SSL certificate errors**
+
+```bash
+# In .env
+VERIFY_SSL=false
+
+# Restart the backend
+docker compose restart specforge-api
+```
+
+**Issue: Frontend cannot connect to API**
+
+```bash
+# Verify both containers are running
+docker compose ps
+
+# Check CORS settings
+grep CORS .env
+```
+
+Ensure `CORS_ALLOW_ORIGINS` includes the frontend origin (e.g., `http://localhost:3000`).
+
+**Issue: Private domain not resolving inside container**
+
+Set `LOCAL_URL_ENDPOINT=your-private-domain.internal` in `.env` — this adds the host-gateway mapping for the container.
 
 ---
 
 ## License
 
-This project is licensed under the terms in [LICENSE.md](./LICENSE.md).
+This project is licensed under our [LICENSE](./LICENSE.md) file for details.
 
 ---
 
@@ -354,10 +524,10 @@ This project is licensed under the terms in [LICENSE.md](./LICENSE.md).
 
 **SpecForge** is provided as-is for demonstration and educational purposes. While we strive for accuracy:
 
-- AI-generated specifications should be reviewed by qualified engineers
-- Do not rely solely on AI output without validation
-- Do not submit confidential information to third-party APIs without reviewing their policies
-- Quality depends on the underlying model and may vary
+- AI-generated specifications should be reviewed by qualified engineers before use in production systems
+- Do not rely solely on AI-generated specifications without testing and validation
+- Do not submit confidential or proprietary information to third-party API providers without reviewing their data handling policies
+- The quality of generated specifications depends on the underlying model and may vary
 
-For full disclaimer, see [DISCLAIMER.md](./DISCLAIMER.md).
+For full disclaimer details, see [DISCLAIMER.md](./DISCLAIMER.md).
 
