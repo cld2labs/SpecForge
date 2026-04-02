@@ -2,6 +2,9 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+ # Upgrade pip, setuptools, and wheel to fix security vulnerabilitie
+ RUN pip install --no-cache-dir --upgrade pip setuptools>=79.1.0 wheel>=0.46.2
+
 # Copy requirements first for better caching
 COPY requirements.txt .
 
