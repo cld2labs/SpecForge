@@ -30,6 +30,12 @@ An AI-powered application that generates comprehensive system design specificati
     - [Local Development Setup](#local-development-setup)
   - [Project Structure](#project-structure)
   - [Usage Guide](#usage-guide)
+  - [Performance Tips](#performance-tips)
+  - [Inference Benchmarks](#inference-benchmarks)
+  - [Model Capabilities](#model-capabilities)
+    - [GPT-4o](#gpt-4o)
+    - [Llama 3.2 3B Instruct](#llama-32-3b-instruct)
+    - [Comparison Summary](#comparison-summary)
   - [LLM Provider Configuration](#llm-provider-configuration)
     - [OpenAI](#openai)
     - [Groq](#groq)
@@ -301,6 +307,98 @@ SpecForge/
 1. Use the chat interface below the spec
 2. Ask for changes (e.g., "Add a caching layer" or "Use PostgreSQL instead")
 3. The AI updates the spec while maintaining structure
+
+---
+
+## Performance Tips
+
+- **Use larger context windows for complex projects.** Models with 128K+ context (like GPT-4o) can handle more detailed requirements without truncation. For smaller models like Llama 3.2 3B (8K context), reduce `LLM_MAX_TOKENS` to leave room for prompts.
+- **Lower `LLM_TEMPERATURE`** (e.g., `0.3–0.5`) for more consistent, structured specifications. Raise it slightly (e.g., `0.7–0.9`) for more creative architectural suggestions.
+- **Provide detailed answers to clarifying questions.** The more context you provide, the more accurate and comprehensive the generated specification will be.
+- **Use the refinement feature iteratively.** Start with a basic spec, then refine specific sections (e.g., "Add Redis caching layer", "Switch to PostgreSQL") rather than regenerating from scratch.
+- **On Apple Silicon**, always run Ollama natively — never inside Docker. The MPS (Metal) GPU backend delivers significantly better throughput than CPU-only inference.
+- **For enterprise deployments**, choose a model optimized for long-form technical writing. GPT-4o and Claude Sonnet 3.5 excel at structured documentation.
+
+---
+
+## Inference Benchmarks
+
+The table below compares inference performance across different providers and models using a standardized SpecForge workload (3 runs: questions generation + spec generation with 1000 max output tokens).
+
+| Provider       | Model                          | Deployment           | Context Window | Avg Input Tokens | Avg Output Tokens | Avg Tokens / Request | P50 Latency (ms) | P95 Latency (ms) | Throughput (req/s) | Hardware         |
+| -------------- | ------------------------------ | -------------------- | -------------- | ---------------- | ----------------- | -------------------- | ---------------- | ---------------- | ------------------ | ---------------- |
+| OpenAI (Cloud) | `gpt-4o`                       | API (Cloud)          | 128K           | 4,018            | 875               | 4,893                | 13,540           | 24,892           | 0.074              | Cloud GPUs       |
+| LiteLLM        | `meta-llama/Llama-3.2-3B-Instruct` | Enterprise Gateway   | 8.1K           | 4,158            | 823               | 4,982                | 33,911           | 38,391           | 0.035              | CPU (Xeon)       |
+
+> **Notes:**
+>
+> - All benchmarks use identical SpecForge workflows: idea input → 5 questions → spec generation with `LLM_MAX_TOKENS=1000`.
+> - Token counts are actual values from API responses (not estimates).
+> - GPT-4o delivers 2.5x faster P50 latency and 2.1x better throughput compared to Llama 3.2 3B on the tested infrastructure.
+> - Llama 3.2 3B performance is limited by CPU-only inference on the test gateway. Local GPU inference would significantly improve these numbers.
+
+---
+
+## Model Capabilities
+
+### GPT-4o
+
+OpenAI's flagship multimodal model, optimized for speed and intelligence across text and vision tasks.
+
+| Attribute                   | Details                                                                           |
+| --------------------------- | --------------------------------------------------------------------------------- |
+| **Parameters**              | Not publicly disclosed                                                            |
+| **Architecture**            | Multimodal Transformer (text + image input, text output)                          |
+| **Context Window**          | 128,000 tokens input / 16,384 tokens max output                                   |
+| **Reasoning Mode**          | Standard inference with strong chain-of-thought reasoning                         |
+| **Tool / Function Calling** | Supported; parallel function calling                                              |
+| **Structured Output**       | JSON mode and strict JSON schema adherence supported                              |
+| **Multilingual**            | Broad multilingual support (50+ languages)                                        |
+| **Benchmarks**              | Strong performance on system design, architectural decision-making, and technical documentation |
+| **Pricing**                 | $2.50 / 1M input tokens, $10.00 / 1M output tokens (as of 2024)                   |
+| **Fine-Tuning**             | Supervised fine-tuning via OpenAI API                                             |
+| **License**                 | Proprietary (OpenAI Terms of Use)                                                 |
+| **Deployment**              | Cloud-only — OpenAI API or Azure OpenAI Service. No self-hosted option           |
+| **Knowledge Cutoff**        | October 2023                                                                      |
+
+### Llama 3.2 3B Instruct
+
+Meta's small-scale open-weight instruction-tuned model, designed for edge and on-premises deployment.
+
+| Attribute                   | Details                                                                                                             |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **Parameters**              | 3.21B total parameters                                                                                              |
+| **Architecture**            | Transformer decoder with Grouped Query Attention (GQA)                                                              |
+| **Context Window**          | 131,072 tokens (128K) native                                                                                        |
+| **Reasoning Mode**          | Standard instruction-following (no explicit chain-of-thought mode)                                                  |
+| **Tool / Function Calling** | Limited native support; can be prompted for structured output                                                       |
+| **Structured Output**       | JSON formatting supported via prompting                                                                             |
+| **Multilingual**            | Primarily English-focused with limited multilingual capabilities                                                    |
+| **Benchmarks**              | MMLU: 63.4%, strong small-model performance for reasoning tasks                                                     |
+| **Quantization Formats**    | GGUF, GPTQ, AWQ — runs on consumer hardware (4GB+ RAM)                                                              |
+| **Inference Runtimes**      | Ollama, vLLM, llama.cpp, LMStudio, Transformers                                                                     |
+| **Fine-Tuning**             | Full fine-tuning and LoRA adapters supported                                                                        |
+| **License**                 | Llama 3.2 Community License (open for research and commercial use)                                                  |
+| **Deployment**              | Local, on-prem, air-gapped, cloud — full data sovereignty                                                           |
+
+### Comparison Summary
+
+| Capability                      | GPT-4o                           | Llama 3.2 3B Instruct            |
+| ------------------------------- | -------------------------------- | -------------------------------- |
+| System design specifications    | Excellent                        | Good                             |
+| Architectural diagrams          | Excellent                        | Good (requires careful prompting)|
+| Technical documentation         | Excellent                        | Good                             |
+| Function / tool calling         | Native support                   | Prompt-based                     |
+| JSON structured output          | Native with schema validation    | Prompt-based                     |
+| On-prem / air-gapped deployment | No                               | Yes                              |
+| Data sovereignty                | No (cloud API)                   | Full (weights run locally)       |
+| Open weights                    | No (proprietary)                 | Yes (Llama 3.2 License)          |
+| Custom fine-tuning              | API-based only                   | Full fine-tuning + LoRA          |
+| Edge device deployment          | N/A                              | Yes (quantized variants)         |
+| Multimodal (image input)        | Yes                              | No                               |
+| Native context window           | 128K                             | 128K                             |
+
+> Both models can generate system design specifications, though GPT-4o produces more comprehensive and detailed output with better architectural reasoning. Llama 3.2 3B excels in air-gapped environments, cost-sensitive deployments, and scenarios requiring data sovereignty.
 
 ---
 
