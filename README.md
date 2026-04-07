@@ -327,8 +327,9 @@ The table below compares inference performance across different providers and mo
 
 | Provider       | Model                          | Deployment           | Context Window | Avg Input Tokens | Avg Output Tokens | Avg Tokens / Request | P50 Latency (ms) | P95 Latency (ms) | Throughput (req/s) | Hardware         |
 | -------------- | ------------------------------ | -------------------- | -------------- | ---------------- | ----------------- | -------------------- | ---------------- | ---------------- | ------------------ | ---------------- |
-| OpenAI (Cloud) | `gpt-4o`                       | API (Cloud)          | 128K           | 4,018            | 875               | 4,893                | 13,540           | 24,892           | 0.074              | Cloud GPUs       |
-| LiteLLM        | `meta-llama/Llama-3.2-3B-Instruct` | Enterprise Gateway   | 8.1K           | 4,158            | 823               | 4,982                | 33,911           | 38,391           | 0.035              | CPU (Xeon)       |
+| vLLM    | `meta-llama/Llama-3.2-3B-Instruct` | Local   | 16.4K           | 4,155            |  1,197               | 5,352                | 108,068           | 124,953           | 0.011              | Apple Silicon (Metal) (Macbook Pro M4)       |
+| [Intel OPEA EI](https://github.com/opea-project/Enterprise-Inference)       | `meta-llama/Llama-3.2-3B-Instruct` | Enterprise (On-Prem)   | 8.1K           | 4,158            | 823               | 4,982                | 33,911           | 38,391           | 0.035              | CPU-only (Xeon)       |
+| OpenAI (Cloud) | `gpt-4o`                       | API (Cloud)          | 128K           | 4,018            | 875               | 4,893                | 13,540           | 24,892           | 0.074              | N/A      |
 
 > **Notes:**
 >
