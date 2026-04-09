@@ -31,7 +31,7 @@ An AI-powered application that generates comprehensive system design specificati
   - [Project Structure](#project-structure)
   - [Usage Guide](#usage-guide)
   - [Performance Tips](#performance-tips)
-  - [Inference Benchmarks](#inference-benchmarks)
+  - [Inference Metrics](#inference-metrics)
   - [Model Capabilities](#model-capabilities)
     - [GPT-4o](#gpt-4o)
     - [Llama 3.2 3B Instruct](#llama-32-3b-instruct)
@@ -321,7 +321,7 @@ SpecForge/
 
 ---
 
-## Inference Benchmarks
+## Inference Metrics
 
 The table below compares inference performance across different providers and models using a standardized SpecForge workload (3 runs: questions generation + spec generation with 1000 max output tokens).
 
@@ -333,7 +333,7 @@ The table below compares inference performance across different providers and mo
 
 > **Notes:**
 >
-> - All benchmarks use identical SpecForge workflows: idea input → 5 questions → spec generation with `LLM_MAX_TOKENS=1000`.
+> - All metrics use identical SpecForge workflows: idea input → 5 questions → spec generation with `LLM_MAX_TOKENS=1000`.
 > - Token counts are actual values from API responses (not estimates).
 > - GPT-4o delivers 2.5x faster P50 latency and 2.1x better throughput compared to Llama 3.2 3B on the tested infrastructure.
 > - Llama 3.2 3B performance is limited by CPU-only inference on the test gateway. Local GPU inference would significantly improve these numbers.
